@@ -57,29 +57,21 @@ public class GoogleSheetUtil {
         .setValueRenderOption("FORMULA")
         .execute();
     
-    
     ObjectMapper objectMapper = new ObjectMapper();
     Map<String, Object> map = objectMapper.readValue(response.toPrettyString()
         , new TypeReference<Map<String, Object>>(){});
 
-    ArrayList<ArrayList<String>> arrayList = (ArrayList<ArrayList<String>>) map.get("values");
-    System.out.println(arrayList.get(0).get(0));
-    System.exit(0);
+    ArrayList<ArrayList<String>> rawDatas = (ArrayList<ArrayList<String>>) map.get("values");
     
-    List<String> values = response.getValues().stream()
-    		.map(item -> String.valueOf(item))
-    		.collect(Collectors.toList());
-    
-    if (values == null || values.isEmpty()) {
+    if (rawDatas == null || rawDatas.isEmpty()) {
       throw new RuntimeException(sheetName + ": No Data.");
     }
 
     List<Map<String, String>> dataList = new ArrayList<>();
     
     // header
-    String[] header = values.get(0)
-        .substring(1, values.get(0).length()-1)
-        .split(",");
+    System.out.println(rawDatas.get(0));
+    ArrayList<String> headers = rawDatas.get(0);
     
     for (int i = 1; i < values.size(); i++) {
       Map<String, String> rowMap = new HashMap<String, String>();
@@ -96,5 +88,10 @@ public class GoogleSheetUtil {
     }
     
     return dataList;
+  }
+  
+  private List<Map<String, String>> combine(ArrayList<String> headers, List<ArrayList<String>> rows) {
+    List<Map<String, String>> retList = new ArrayList<>();
+    
   }
 }
