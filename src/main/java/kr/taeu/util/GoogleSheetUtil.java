@@ -5,9 +5,13 @@ import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.HttpTransport;
@@ -47,20 +51,50 @@ public class GoogleSheetUtil {
       return sheets;
   }
   
-  public List<String> loadData(String SheetId, Sheets sheets, String sheetName) throws IOException {
+  public List<Map<String, String>> loadData(String SheetId, Sheets sheets, String sheetName) throws IOException {
     ValueRange response = sheets.spreadsheets().values()
         .get(SheetId, sheetName)
         .setValueRenderOption("FORMULA")
         .execute();
     
+    
+    ObjectMapper objectMapper = new ObjectMapper();
+    Map<String, Object> map = objectMapper.readValue(response.toPrettyString()
+        , new TypeReference<Map<String, Object>>(){});
+
+    ArrayList<ArrayList<String>> arrayList = (ArrayList<ArrayList<String>>) map.get("values");
+    System.out.println(arrayList.get(0).get(0));
+    System.exit(0);
+    
     List<String> values = response.getValues().stream()
-        .map(item -> String.valueOf(item))
-            .collect(Collectors.toList());
+    		.map(item -> String.valueOf(item))
+    		.collect(Collectors.toList());
     
     if (values == null || values.isEmpty()) {
       throw new RuntimeException(sheetName + ": No Data.");
     }
+
+    List<Map<String, String>> dataList = new ArrayList<>();
     
-    return values;
+    // header
+    String[] header = values.get(0)
+        .substring(1, values.get(0).length()-1)
+        .split(",");
+    
+    for (int i = 1; i < values.size(); i++) {
+      Map<String, String> rowMap = new HashMap<String, String>();
+      System.out.println(values.get(i));
+      String[] datas = values.get(i)
+          .substring(1, values.get(i).length()-1)
+          .split(",");
+      System.out.println(header.length + ": " + datas.length);
+      for (int j = 0; j < datas.length; j++) {
+        System.out.printf("%s: %s\n", header[j], datas[j]);
+        rowMap.put(header[j], datas[j]);
+      }
+      dataList.add(rowMap);
+    }
+    
+    return dataList;
   }
 }

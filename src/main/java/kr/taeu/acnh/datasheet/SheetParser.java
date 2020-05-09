@@ -72,17 +72,19 @@ public class SheetParser {
     try {
       GoogleSheetUtil googleSheetUtil = new GoogleSheetUtil(CREDENTIALS_FILE_PATH);
       Sheets sheets = googleSheetUtil.createSheetsService();
-      Map<String, List<List<String>>> retMap = new HashMap<>();
+      Map<String, List<List<Map<String,String>>>> retMap = new HashMap<>();
       Map<String, String[]> workSet = getWorkSet();
       
-      for(String key : workSet.keySet()) {
+      for (String key : workSet.keySet()) {
         System.out.printf("workSet: %s\n", key);
-        List<List<String>> dataList = new ArrayList<>();
+        List<List<Map<String, String>>> dataList = new ArrayList<>();
         
-        for(String sheetName : workSet.get(key)) {
+        for (String sheetName : workSet.get(key)) {
           System.out.printf("sheetName: %s\n", sheetName);
           
-          List<String> sheetData = googleSheetUtil.loadData(SHEET_ID, sheets, sheetName);
+          List<Map<String, String>> sheetData = googleSheetUtil.loadData(SHEET_ID, sheets, sheetName);
+          System.out.println(sheetData.get(0));
+          System.out.println(sheetData.get(1));
           dataList.add(sheetData);
         }
         retMap.put(key, dataList);
@@ -92,7 +94,7 @@ public class SheetParser {
     }
   }
   
-  private void normalizeData() {
+  private void normalizeData(List<String> sheetData) {
     
   }
   
@@ -105,7 +107,7 @@ public class SheetParser {
     map.put("recipes", RECIPE_SHEETS);
     map.put("villagers", VILLAGERS_SHEETS);
     map.put("construction", CONSTRUCTION_SHEETS);
-    map.put("achievements", ACHIEVEMENTS_SHEETS);
+    //map.put("achievements", ACHIEVEMENTS_SHEETS);
     map.put("reactions", REACTIONS_SHEETS);
     
     return map;
