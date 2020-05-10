@@ -73,19 +73,19 @@ public class GoogleSheetUtil {
     System.out.println(rawDatas.get(0));
     ArrayList<String> headers = rawDatas.get(0);
     
-    for (int i = 1; i < values.size(); i++) {
-      Map<String, String> rowMap = new HashMap<String, String>();
-      System.out.println(values.get(i));
-      String[] datas = values.get(i)
-          .substring(1, values.get(i).length()-1)
-          .split(",");
-      System.out.println(header.length + ": " + datas.length);
-      for (int j = 0; j < datas.length; j++) {
-        System.out.printf("%s: %s\n", header[j], datas[j]);
-        rowMap.put(header[j], datas[j]);
-      }
-      dataList.add(rowMap);
-    }
+//    for (int i = 1; i < values.size(); i++) {
+//      Map<String, String> rowMap = new HashMap<String, String>();
+//      System.out.println(values.get(i));
+//      String[] datas = values.get(i)
+//          .substring(1, values.get(i).length()-1)
+//          .split(",");
+//      System.out.println(header.length + ": " + datas.length);
+//      for (int j = 0; j < datas.length; j++) {
+//        System.out.printf("%s: %s\n", header[j], datas[j]);
+//        rowMap.put(header[j], datas[j]);
+//      }
+//      dataList.add(rowMap);
+//    }
     
     return dataList;
   }
@@ -93,5 +93,16 @@ public class GoogleSheetUtil {
   private List<Map<String, String>> combine(ArrayList<String> headers, List<ArrayList<String>> rows) {
     List<Map<String, String>> retList = new ArrayList<>();
     
+    for(int i = 0; i < rows.size(); i++) {
+      Map<String, String> map = new HashMap<>();
+      ArrayList<String> row = rows.get(i);
+      
+    }
+    for(int i = 0; i < headers.size(); i++) {
+      
+      map.put(header, rows.get(i));
+    }
+    
+    return retList;
   }
 }
