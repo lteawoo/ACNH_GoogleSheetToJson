@@ -27,7 +27,7 @@ public class GoogleSheetUtil {
   private final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
   private final String credentialsFilePath;
   
-  public GoogleSheetUtil(String credentialsFilePath) {
+  public GoogleSheetUtil(final String credentialsFilePath) {
     this.credentialsFilePath = credentialsFilePath;
   }
   
@@ -51,26 +51,24 @@ public class GoogleSheetUtil {
       return sheets;
   }
   
-  public List<Map<String, String>> loadData(String SheetId, Sheets sheets, String sheetName) throws IOException {
-    ValueRange response = sheets.spreadsheets().values()
+  public List<Map<String, String>> loadData(final String SheetId, final Sheets sheets, final String sheetName) throws IOException {
+    final ValueRange response = sheets.spreadsheets().values()
         .get(SheetId, sheetName)
         .setValueRenderOption("FORMULA")
         .execute();
     
-    ObjectMapper objectMapper = new ObjectMapper();
-    Map<String, Object> map = objectMapper.readValue(response.toPrettyString()
+    final ObjectMapper objectMapper = new ObjectMapper();
+    final Map<String, Object> map = objectMapper.readValue(response.toPrettyString()
         , new TypeReference<Map<String, Object>>(){});
 
-    ArrayList<ArrayList<Object>> rawDatas = (ArrayList<ArrayList<Object>>) map.get("values");
+    final ArrayList<ArrayList<Object>> rawDatas = (ArrayList<ArrayList<Object>>) map.get("values");
     
     if (rawDatas == null || rawDatas.isEmpty()) {
       throw new RuntimeException(sheetName + ": No Data.");
     }
 
-    List<Map<String, String>> dataList = new ArrayList<>();
-    
-    // header
-    ArrayList<Object> headers = rawDatas.get(0);
+    final List<Map<String, String>> dataList = new ArrayList<>();
+    final ArrayList<Object> headers = rawDatas.get(0);
     
     for (int i = 1; i < rawDatas.size(); i++) {
       dataList.add(combine(headers, rawDatas.get(i)));
@@ -79,11 +77,11 @@ public class GoogleSheetUtil {
     return dataList;
   }
   
-  private Map<String, String> combine(ArrayList<Object> headers, ArrayList<Object> row) {
-    Map<String, String> result = new HashMap<>();
+  private Map<String, String> combine(final ArrayList<Object> headers, final ArrayList<Object> row) {
+    final Map<String, String> result = new HashMap<>();
     
     for(int i = 0; i < headers.size(); i++) {
-      String rowData = (row.size() > i) ? String.valueOf(row.get(i)) : null; 
+      final String rowData = (row.size() > i) ? String.valueOf(row.get(i)) : null; 
       
       result.put(String.valueOf(headers.get(i)), rowData);
     }
