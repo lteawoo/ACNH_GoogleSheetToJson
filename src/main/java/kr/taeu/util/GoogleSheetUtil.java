@@ -50,11 +50,11 @@ public class GoogleSheetUtil {
     final HttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
     final HttpRequestInitializer requestInitializer = new HttpCredentialsAdapter(getGoogleCredentials());
     
-      final Sheets sheets = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, requestInitializer)
-          .setApplicationName("Google Sheets API")
-          .build();
-      
-      return sheets;
+    final Sheets sheets = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, requestInitializer)
+        .setApplicationName("Google Sheets API")
+        .build();
+    
+    return sheets;
   }
   
   public List<Map<String, String>> loadData(final String SheetId, final Sheets sheets, final String sheetName) throws IOException {
