@@ -61,7 +61,7 @@ public class GoogleSheetUtil {
     Map<String, Object> map = objectMapper.readValue(response.toPrettyString()
         , new TypeReference<Map<String, Object>>(){});
 
-    ArrayList<ArrayList<String>> rawDatas = (ArrayList<ArrayList<String>>) map.get("values");
+    ArrayList<ArrayList<Object>> rawDatas = (ArrayList<ArrayList<Object>>) map.get("values");
     
     if (rawDatas == null || rawDatas.isEmpty()) {
       throw new RuntimeException(sheetName + ": No Data.");
@@ -70,39 +70,24 @@ public class GoogleSheetUtil {
     List<Map<String, String>> dataList = new ArrayList<>();
     
     // header
-    System.out.println(rawDatas.get(0));
-    ArrayList<String> headers = rawDatas.get(0);
+    ArrayList<Object> headers = rawDatas.get(0);
     
-//    for (int i = 1; i < values.size(); i++) {
-//      Map<String, String> rowMap = new HashMap<String, String>();
-//      System.out.println(values.get(i));
-//      String[] datas = values.get(i)
-//          .substring(1, values.get(i).length()-1)
-//          .split(",");
-//      System.out.println(header.length + ": " + datas.length);
-//      for (int j = 0; j < datas.length; j++) {
-//        System.out.printf("%s: %s\n", header[j], datas[j]);
-//        rowMap.put(header[j], datas[j]);
-//      }
-//      dataList.add(rowMap);
-//    }
+    for (int i = 1; i < rawDatas.size(); i++) {
+      dataList.add(combine(headers, rawDatas.get(i)));
+    }
     
     return dataList;
   }
   
-  private List<Map<String, String>> combine(ArrayList<String> headers, List<ArrayList<String>> rows) {
-    List<Map<String, String>> retList = new ArrayList<>();
+  private Map<String, String> combine(ArrayList<Object> headers, ArrayList<Object> row) {
+    Map<String, String> result = new HashMap<>();
     
-    for(int i = 0; i < rows.size(); i++) {
-      Map<String, String> map = new HashMap<>();
-      ArrayList<String> row = rows.get(i);
-      
-    }
     for(int i = 0; i < headers.size(); i++) {
+      String rowData = (row.size() > i) ? String.valueOf(row.get(i)) : null; 
       
-      map.put(header, rows.get(i));
+      result.put(String.valueOf(headers.get(i)), rowData);
     }
     
-    return retList;
+    return result;
   }
 }
