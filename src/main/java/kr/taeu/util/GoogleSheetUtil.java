@@ -22,6 +22,13 @@ import com.google.api.services.sheets.v4.model.ValueRange;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
 
+/**
+ * GoogleSheetUtil
+ * Load a data from Google Sheet with Credential File
+ * and Convert a Object data from sheet to List (including row that is Map)
+ * @author Taeu(Lee Tae Woo)
+ * @since 2020-05-11
+ */
 public class GoogleSheetUtil {
   private final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
   private final String credentialsFilePath;
