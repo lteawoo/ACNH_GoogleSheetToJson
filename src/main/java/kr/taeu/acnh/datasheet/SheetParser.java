@@ -19,7 +19,7 @@ public class SheetParser {
       "Housewares",
       "Miscellaneous",
       "Wall-mounted",
-      "Wallpapers",
+      "Wallpaper",
       "Floors",
       "Rugs",
       "Fencing",
@@ -42,10 +42,10 @@ public class SheetParser {
   };
   private final String[] CREATURE_SHEETS = {
       "Fish",
-      "Bugs",
+      "Insects",
   };
   private final String[] NOOK_MILE_SHEETS = {
-      "Nook Miles",
+      "NookMiles",
   };
 
   private final String[] RECIPE_SHEETS = {
@@ -83,8 +83,6 @@ public class SheetParser {
           System.out.printf("sheetName: %s\n", sheetName);
           
           List<Map<String, String>> sheetData = googleSheetUtil.loadData(SHEET_ID, sheets, sheetName);
-          System.out.println(sheetData.get(0));
-          System.out.println(sheetData.get(1));
           dataList.add(sheetData);
         }
         retMap.put(key, dataList);
@@ -107,7 +105,7 @@ public class SheetParser {
     map.put("recipes", RECIPE_SHEETS);
     map.put("villagers", VILLAGERS_SHEETS);
     map.put("construction", CONSTRUCTION_SHEETS);
-    //map.put("achievements", ACHIEVEMENTS_SHEETS);
+    map.put("achievements", ACHIEVEMENTS_SHEETS);
     map.put("reactions", REACTIONS_SHEETS);
     
     return map;
