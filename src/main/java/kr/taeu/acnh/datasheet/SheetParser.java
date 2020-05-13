@@ -82,7 +82,8 @@ public class SheetParser {
         for (String sheetName : workSet.get(key)) {
           System.out.printf("sheetName: %s\n", sheetName);
           
-          List<Map<String, String>> sheetData = googleSheetUtil.loadData(SHEET_ID, sheets, sheetName);
+          List<Map<String, String>> sheetData = normalizeData(googleSheetUtil.loadData(SHEET_ID, sheets, sheetName));
+          
           dataList.add(sheetData);
         }
         retMap.put(key, dataList);
@@ -92,8 +93,11 @@ public class SheetParser {
     }
   }
   
-  private void normalizeData(List<String> sheetData) {
+  private List<Map<String, String>> normalizeData(List<Map<String, String>> sheetData) {
     // TODO nomalizeData
+    List<Map<String, String>> nomalized = new ArrayList<>();
+    
+    return nomalized;
   }
   
   private Map<String, String[]> getWorkSet() {
