@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.text.CaseUtils;
+
 import com.google.api.services.sheets.v4.Sheets;
 
 import kr.taeu.util.GoogleSheetUtil;
@@ -44,9 +46,10 @@ public class SheetParser {
       "Fish",
       "Insects",
   };
-  private final String[] NOOK_MILE_SHEETS = {
-      "NookMiles",
-  };
+  
+//  private final String[] NOOK_MILE_SHEETS = {
+//      "NookMiles",
+//  };
 
   private final String[] RECIPE_SHEETS = {
       "Recipes",
@@ -94,6 +97,27 @@ public class SheetParser {
   }
   
   private List<Map<String, String>> normalizeData(List<Map<String, String>> sheetData) {
+    for(Map<String, String> row : sheetData) {
+      Map<String, String> normalizedRow = new HashMap<>();
+      // 1.Normalize keys
+      for(final String originalKey : row.keySet()) {
+        String key = "";
+        
+        // Need to convert # to "num" because toCamelCase converts it to an empty string
+        if(originalKey.equals("#")) {
+          key = "num";
+        } else {
+          key = CaseUtils.toCamelCase(originalKey, true);
+        }
+        
+        // 2.Normalize values
+        String value = row.get(originalKey).trim();
+        // TODO valueFormatter 작성해야함.
+        
+        System.out.println(key);
+      }
+    }
+    
     // TODO nomalizeData
     List<Map<String, String>> nomalized = new ArrayList<>();
     
@@ -105,7 +129,7 @@ public class SheetParser {
     
     map.put("items", ITEM_SHEETS);
     map.put("creatures", CREATURE_SHEETS);
-    map.put("nookMiles", NOOK_MILE_SHEETS);
+    // map.put("nookMiles", NOOK_MILE_SHEETS);
     map.put("recipes", RECIPE_SHEETS);
     map.put("villagers", VILLAGERS_SHEETS);
     map.put("construction", CONSTRUCTION_SHEETS);

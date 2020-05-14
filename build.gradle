@@ -23,6 +23,7 @@ dependencies {
 	implementation group: 'com.google.apis', name: 'google-api-services-sheets', version: 'v4-rev612-1.25.0'
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.11.0'
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.0'
+  implementation group: 'org.apache.commons', name: 'commons-text', version: '1.8'
   
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
