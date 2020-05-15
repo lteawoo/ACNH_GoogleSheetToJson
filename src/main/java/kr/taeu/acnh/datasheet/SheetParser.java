@@ -11,6 +11,8 @@ import org.apache.commons.text.CaseUtils;
 
 import com.google.api.services.sheets.v4.Sheets;
 
+import kr.taeu.acnh.datasheet.valueformatter.ValueFormatter;
+import kr.taeu.acnh.datasheet.valueformatter.ValueFormatters;
 import kr.taeu.util.GoogleSheetUtil;
 
 public class SheetParser {
@@ -112,7 +114,8 @@ public class SheetParser {
         
         // 2.Normalize values
         String value = row.get(originalKey).trim();
-        // TODO valueFormatter 작성해야함.
+        
+        // TODO valueFormatter 하는중
         
         System.out.println(key);
       }
