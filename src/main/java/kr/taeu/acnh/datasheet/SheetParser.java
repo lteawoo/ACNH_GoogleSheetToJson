@@ -3,6 +3,7 @@ package kr.taeu.acnh.datasheet;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,21 +74,29 @@ public class SheetParser {
       "Reactions",
   };
   
+  private final String[] NULL_VALUES = {
+      "None",
+      "NA",
+      "Does not play music",
+      "No lighting",
+      "",
+  };
+  
   public void parseData() {
     try {
       GoogleSheetUtil googleSheetUtil = new GoogleSheetUtil(CREDENTIALS_FILE_PATH);
       Sheets sheets = googleSheetUtil.createSheetsService();
-      Map<String, List<List<Map<String,String>>>> retMap = new HashMap<>();
+      Map<String, List<List<Map<String, String>>>> retMap = new HashMap<>();
       Map<String, String[]> workSet = getWorkSet();
       
       for (String key : workSet.keySet()) {
         System.out.printf("workSet: %s\n", key);
-        List<List<Map<String, String>>> dataList = new ArrayList<>();
+        List<List<Map<String, Object>>> dataList = new ArrayList<>();
         
         for (String sheetName : workSet.get(key)) {
           System.out.printf("sheetName: %s\n", sheetName);
           
-          List<Map<String, String>> sheetData = normalizeData(googleSheetUtil.loadData(SHEET_ID, sheets, sheetName));
+          List<Map<String, Object>> sheetData = normalizeData(googleSheetUtil.loadData(SHEET_ID, sheets, sheetName), sheetName);
           
           dataList.add(sheetData);
         }
@@ -98,7 +107,7 @@ public class SheetParser {
     }
   }
   
-  private List<Map<String, String>> normalizeData(List<Map<String, String>> sheetData) {
+  private List<Map<String, Object>> normalizeData(List<Map<String, String>> sheetData, String sheetName) {
     for(Map<String, String> row : sheetData) {
       Map<String, String> normalizedRow = new HashMap<>();
       // 1.Normalize keys
@@ -113,11 +122,34 @@ public class SheetParser {
         }
         
         // 2.Normalize values
-        String value = row.get(originalKey).trim();
+        String value = row.get(originalKey);
+        if(value != null) {
+          value = value.trim();
+          
+          ValueFormatter<String> valueFormatter = getValueFormatter(key);
+          
+          if (valueFormatter != null) {
+            value = valueFormatter.format(value);
+          }
+          
+          if (Arrays.stream(NULL_VALUES).anyMatch(value::equals)) {
+            value = null;
+          } else if (value.equals("Yes")) {
+            value = "true";
+          } else if (value.equals("No")) {
+            value = "false";
+          } else if (value.equals("NFS")) { // Not for sale
+            value = "-1";
+          }
+        } else {
+          value = null;
+        }
         
-        // TODO valueFormatter 하는중
-        
-        System.out.println(key);
+        normalizedRow.put(key, value);
+      }
+      
+      if (sheetName.equals("items")) {
+        // TODO colors 작업해야함
       }
     }
     
@@ -125,6 +157,29 @@ public class SheetParser {
     List<Map<String, String>> nomalized = new ArrayList<>();
     
     return nomalized;
+  }
+  
+  private ValueFormatter<String> getValueFormatter(String key) {
+    ValueFormatter<String> ret = null;
+    
+    switch(key) {
+    case "image": ret = ValueFormatters.extractImageUrl(); break;
+    case "house": ret = ValueFormatters.extractImageUrl(); break;
+    case "furnitureImage": ret = ValueFormatters.extractImageUrl(); break;
+    case "critterpediaImage": ret = ValueFormatters.extractImageUrl(); break;
+    case "closetImage": ret = ValueFormatters.extractImageUrl(); break;
+    case "storageImage": ret = ValueFormatters.extractImageUrl(); break;
+    case "albumImage": ret = ValueFormatters.extractImageUrl(); break;
+    case "framedImage": ret = ValueFormatters.extractImageUrl(); break;
+    case "iconImage": ret = ValueFormatters.extractImageUrl(); break;
+    case "houseImage": ret = ValueFormatters.extractImageUrl(); break;
+    case "inventoryImage": ret = ValueFormatters.extractImageUrl(); break;
+    case "uses": ret = ValueFormatters.normalizeUse(); break;
+    // case "source": ret = ValueFormatters.normalizeSource(); break;
+    case "birthday": ret = ValueFormatters.normalizeBirthday(); break;
+    };
+    
+    return ret;
   }
   
   private Map<String, String[]> getWorkSet() {
