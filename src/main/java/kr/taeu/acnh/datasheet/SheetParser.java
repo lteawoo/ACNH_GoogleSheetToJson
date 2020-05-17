@@ -86,7 +86,7 @@ public class SheetParser {
     try {
       GoogleSheetUtil googleSheetUtil = new GoogleSheetUtil(CREDENTIALS_FILE_PATH);
       Sheets sheets = googleSheetUtil.createSheetsService();
-      Map<String, List<List<Map<String, String>>>> retMap = new HashMap<>();
+      Map<String, List<List<Map<String, Object>>>> retMap = new HashMap<>();
       Map<String, String[]> workSet = getWorkSet();
       
       for (String key : workSet.keySet()) {
@@ -109,7 +109,7 @@ public class SheetParser {
   
   private List<Map<String, Object>> normalizeData(List<Map<String, String>> sheetData, String sheetName) {
     for(Map<String, String> row : sheetData) {
-      Map<String, String> normalizedRow = new HashMap<>();
+      Map<String, Object> normalizedRow = new HashMap<>();
       // 1.Normalize keys
       for(final String originalKey : row.keySet()) {
         String key = "";
@@ -118,18 +118,19 @@ public class SheetParser {
         if(originalKey.equals("#")) {
           key = "num";
         } else {
-          key = CaseUtils.toCamelCase(originalKey, true);
+          key = CaseUtils.toCamelCase(originalKey, false);
         }
         
         // 2.Normalize values
-        String value = row.get(originalKey);
+        Object value = row.get(originalKey);
+        
         if(value != null) {
-          value = value.trim();
+          value = String.valueOf(value).trim();
           
-          ValueFormatter<String> valueFormatter = getValueFormatter(key);
+          ValueFormatter<?> valueFormatter = getValueFormatter(key);
           
           if (valueFormatter != null) {
-            value = valueFormatter.format(value);
+            value = valueFormatter.format(String.valueOf(value));
           }
           
           if (Arrays.stream(NULL_VALUES).anyMatch(value::equals)) {
@@ -149,18 +150,22 @@ public class SheetParser {
       }
       
       if (sheetName.equals("items")) {
-        // TODO colors 작업해야함
+        Object[] colors = { normalizedRow.get("color1"), normalizedRow.get("color2") };
+        colors = Arrays.stream(colors)
+          .map(item -> item == null ? "false" : item)
+          .toArray();
+        normalizedRow.put("colors", colors);
       }
     }
     
     // TODO nomalizeData
-    List<Map<String, String>> nomalized = new ArrayList<>();
+    List<Map<String, Object>> nomalized = new ArrayList<>();
     
     return nomalized;
   }
   
-  private ValueFormatter<String> getValueFormatter(String key) {
-    ValueFormatter<String> ret = null;
+  private ValueFormatter<?> getValueFormatter(String key) {
+    ValueFormatter<?> ret = null;
     
     switch(key) {
     case "image": ret = ValueFormatters.extractImageUrl(); break;
@@ -175,7 +180,7 @@ public class SheetParser {
     case "houseImage": ret = ValueFormatters.extractImageUrl(); break;
     case "inventoryImage": ret = ValueFormatters.extractImageUrl(); break;
     case "uses": ret = ValueFormatters.normalizeUse(); break;
-    // case "source": ret = ValueFormatters.normalizeSource(); break;
+    case "source": ret = ValueFormatters.normalizeSource(); break;
     case "birthday": ret = ValueFormatters.normalizeBirthday(); break;
     };
     
