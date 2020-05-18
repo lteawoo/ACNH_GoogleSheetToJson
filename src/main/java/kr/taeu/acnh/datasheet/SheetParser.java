@@ -150,11 +150,18 @@ public class SheetParser {
       }
       
       if (sheetName.equals("items")) {
+        if(normalizedRow.get("color1") == null) {
+          
+        }
         Object[] colors = { normalizedRow.get("color1"), normalizedRow.get("color2") };
-        colors = Arrays.stream(colors)
-          .map(item -> item == null ? "false" : item)
-          .toArray();
+        colors = nullToFalse(colors);
         normalizedRow.put("colors", colors);
+        
+        Object[] themes = { normalizedRow.get("hhaConcept1"), normalizedRow.get("hhaConcept2") };
+        themes = nullToFalse(themes);
+        normalizedRow.put("themes", themes);
+        
+        Object[] labelThemes = String.valueOf(normalizedRow.get("labelThemes"));
       }
     }
     
@@ -162,6 +169,12 @@ public class SheetParser {
     List<Map<String, Object>> nomalized = new ArrayList<>();
     
     return nomalized;
+  }
+  
+  private Object[] nullToFalse(Object[] arr) {
+    return Arrays.stream(arr)
+        .map(item -> item == null ? "false" : item)
+        .toArray();
   }
   
   private ValueFormatter<?> getValueFormatter(String key) {
